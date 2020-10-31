@@ -1,10 +1,12 @@
 module RN
   module Commands
     module Notes
+      #FS = FileManager.new
       class Create < Dry::CLI::Command
         desc 'Create a note'
 
         argument :title, required: true, desc: 'Title of the note'
+        argument :content, required: true, desc: 'Content of the note'
         option :book, type: :string, desc: 'Book'
 
         example [
@@ -13,9 +15,10 @@ module RN
           'thoughts --book Memoires    # Creates a note titled "thoughts" in the book "Memoires"'
         ]
 
-        def call(title:, **options)
-          book = options[:book]
-          warn "TODO: Implementar creación de la nota con título '#{title}' (en el libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+        def call(title:, content:, **options)
+          
+          #create_file(note:{title: "#{title}", content: "#{content}"}, **options)
+          #warn "TODO: Implementar creación de la nota con título '#{title}' (en el libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
         end
       end
 
@@ -109,6 +112,7 @@ module RN
         def call(title:, **options)
           book = options[:book]
           warn "TODO: Implementar vista de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          get_note(title,options[:book].to_s)
         end
       end
     end
