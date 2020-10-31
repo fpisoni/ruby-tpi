@@ -5,6 +5,7 @@ module RN
         #initialize
         def self.included(base)
             create_base_dir                         #rescue exceptions
+            create_global_dir
         end
 
         #utils
@@ -12,12 +13,25 @@ module RN
             Dir.mkdir default_dir unless Dir.exist? default_dir
         end
 
+        def create_global_dir 
+            Dir.mkdir global_dir unless Dir.exist? global_dir
+        end
+
+        def global_dir
+            File.join(default_dir,'global')
+        end
+
         def default_dir
             File.join(Dir.home,".my_rns")
         end
 
+        #errors
         def not_found_error msg
             warn("No se encuentra #{msg}")
+        end
+
+        def already_exists_error msg
+            warn("Ya existe #{msg}")
         end
 
     end
@@ -26,8 +40,8 @@ module RN
         include FileManager
         NOTE_TYPE = "la nota"
         
-        def create_note note, **options                 #rescue exceptions
-            File.open(@base_dir << options[:book].to_s << note[:title] <<'.rn', "w+") do |f|
+        def create_note note, book
+            File.open(File.join(default_dir,book,note[:title]) << '.rn', "w+") do |f|
                 f.write(note[:content])
             end
         end
@@ -70,11 +84,15 @@ module RN
             end
         end
 
-        def show_notes 
+        def show_notes book
+            notes = []
             begin
-                Dir
+                Dir.each_child(File.join(default_dir,book)) do |dir|
+                    notes << all_notes_in dir
+                end
             end
         end
+        
 
     end
 
@@ -82,20 +100,21 @@ module RN
         include FileManager
         BOOK_TYPE = "el libro"
 
-        def create_book title
-            Dir.mkdir()
+        def create_book book
+            begin
+                Dir.mkdir(File.join(default_dir,book))
+            rescue Errno::EEXIST
+                not_found_error BookManager::BOOK_TYPE + book
+            #rescue permissions
+            end
         end
 
         def delete_book
-
+            delete_file
         end
 
         def get_books
-
+            find_by_name()
         end
-
-        def find_by_book title
-
-        end    
     end
 end
