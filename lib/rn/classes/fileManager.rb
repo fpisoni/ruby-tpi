@@ -2,13 +2,16 @@ module RN
     module FileManager
         require 'tty-editor'
 
-        #initialize
+        RENAME_ACTION = "renombrar"
+        CREATE_ACTION = "crear"
+        READ_ACTION = "leer"
+
+        #initializion
         def self.included(base)
-            create_base_dir                         #rescue exceptions
+            create_base_dir                        
             create_global_dir
         end
 
-        #utils
         def create_base_dir 
             Dir.mkdir default_dir unless Dir.exist? default_dir
         end
@@ -17,6 +20,28 @@ module RN
             Dir.mkdir global_dir unless Dir.exist? global_dir
         end
 
+        #utility methods
+        def make_text_file path, content
+            #begin
+                File.open(path, "w+") do |f|
+                    f.write(content)
+                end
+            #rescue
+
+        end
+
+        def make_dir path
+            #begin
+                Dir.mkdir(path)
+            #rescue
+
+        end
+
+        def rename_file
+
+        end
+
+        #constants methods
         def global_dir
             File.join(default_dir,'global')
         end
@@ -34,6 +59,10 @@ module RN
             warn("Ya existe #{msg}")
         end
 
+        def not_enough_perms_error msg
+            warn("No tiene permisos suficientes para #{msg}")
+        end
+
     end
 
     module NoteManager
@@ -41,9 +70,7 @@ module RN
         NOTE_TYPE = "la nota"
         
         def create_note note, book
-            File.open(File.join(default_dir,book,note[:title]) << '.rn', "w+") do |f|
-                f.write(note[:content])
-            end
+            make_text_file(File.join(default_dir,book,note[:title]) + '.rn', note[:content])
         end
 
         def retitle_note title, newTitle
@@ -52,7 +79,7 @@ module RN
             rescue Errno::ENOENT
                 not_found_error NoteManager::NOTE_TYPE + title
             rescue SystemCallError
-                warn("No tiene permisos suficientes para renombrar la nota #{title}")
+                not_enough_perms_error FileManager::RENAME_ACTION + NoteManager::NOTE_TYPE + title
             end
         end
 
@@ -73,6 +100,7 @@ module RN
             end
         end
 
+        #single searching methods
         def fetch_note title, book
             begin
                 Dir.each_child(File.join(default_dir,book)) do |note| 
@@ -84,16 +112,24 @@ module RN
             end
         end
 
-        def show_notes book
-            notes = []
-            begin
-                Dir.each_child(File.join(default_dir,book)) do |dir|
-                    notes << all_notes_in dir
-                end
-            end
-        end
-        
+        def find_note title
 
+        end
+
+        #group note methods
+        def show_all_notes
+            notes = []
+            open_dir default_dir.each do |dir|
+                notes << all_notes_in dir
+            end
+            notes
+        end
+
+        def all_notes_in book
+            notes = []
+            open_dir File.join(default_dir,book).each {|f| notes << f}
+            {book: book, notes: notes}
+        end
     end
 
     module BookManager   
