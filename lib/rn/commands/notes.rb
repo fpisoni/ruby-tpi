@@ -1,7 +1,8 @@
 module RN
   module Commands
     module Notes
-      #FS = FileManager.new
+      include NoteManager
+
       class Create < Dry::CLI::Command
         desc 'Create a note'
 
@@ -16,9 +17,13 @@ module RN
         ]
 
         def call(title:, content:, **options)
-          
-          #create_file(note:{title: "#{title}", content: "#{content}"}, **options)
-          #warn "TODO: Implementar creación de la nota con título '#{title}' (en el libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          if (RN::FileManager.validate_name title and RN::FileManager.validate_name (options[:book].to_s))
+            RN::NoteManager.create_note(
+              {title: "#{title}", content: "#{content}"}, 
+              RN::FileManager.validate_book(options[:book]))
+          else
+            RN::NoteManager.title_error 
+          end
         end
       end
 
@@ -36,7 +41,8 @@ module RN
 
         def call(title:, **options)
           book = options[:book]
-          warn "TODO: Implementar borrado de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          RN::NoteManager.delete_note(title, RN::FileManager.validate_book(options[:book]))
+          #warn "TODO: Implementar borrado de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
         end
       end
 

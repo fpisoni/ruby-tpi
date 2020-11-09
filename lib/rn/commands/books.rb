@@ -1,6 +1,8 @@
 module RN
   module Commands
     module Books
+      include BookManager
+
       class Create < Dry::CLI::Command
         desc 'Create a book'
 

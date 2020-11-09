@@ -1,10 +1,10 @@
 module RN
     module FileManager
-        require 'tty-editor'
-
-        RENAME_ACTION = "renombrar"
         CREATE_ACTION = "crear"
+        RENAME_ACTION = "renombrar"
         READ_ACTION = "leer"
+        DELETE_ACTION = "eliminar"
+        ILLEGAL_CHARS = %w("\0","/","\"," ")
 
         #initializion
         def self.included(base)
@@ -12,78 +12,113 @@ module RN
             create_global_dir
         end
 
-        def create_base_dir 
-            Dir.mkdir default_dir unless Dir.exist? default_dir
+        def self.create_base_dir 
+            make_dir base_dir unless Dir.exist? base_dir
         end
 
-        def create_global_dir 
-            Dir.mkdir global_dir unless Dir.exist? global_dir
+        def self.create_global_dir 
+            make_dir global_dir unless Dir.exist? global_dir
         end
 
-        #utility methods
-        def make_text_file path, content
-            #begin
-                File.open(path, "w+") do |f|
-                    f.write(content)
-                end
-            #rescue
-
-        end
-
-        def make_dir path
-            #begin
-                Dir.mkdir(path)
-            #rescue
-
-        end
-
-        def rename_file
-
-        end
 
         #constants methods
-        def global_dir
-            File.join(default_dir,'global')
+        def self.global_dir
+            File.join(base_dir,'global')
         end
 
-        def default_dir
+        def self.base_dir
             File.join(Dir.home,".my_rns")
         end
 
         #errors
-        def not_found_error msg
+        def self.not_found_error msg
             warn("No se encuentra #{msg}")
         end
 
-        def already_exists_error msg
-            warn("Ya existe #{msg}")
-        end
-
-        def not_enough_perms_error msg
+        def self.not_enough_perms_error msg
             warn("No tiene permisos suficientes para #{msg}")
         end
 
-    end
-
-    module NoteManager
-        include FileManager
-        NOTE_TYPE = "la nota"
-        
-        def create_note note, book
-            make_text_file(File.join(default_dir,book,note[:title]) + '.rn', note[:content])
+        def self.already_exists_error msg
+            warn("Ya existe #{msg}")
         end
 
-        def retitle_note title, newTitle
-            begin
-                File.rename(title,newTitle)
-            rescue Errno::ENOENT
-                not_found_error NoteManager::NOTE_TYPE + title
-            rescue SystemCallError
-                not_enough_perms_error FileManager::RENAME_ACTION + NoteManager::NOTE_TYPE + title
+        def self.cant_delete_error msg
+            warn("No se puede borrar #{msg}")            
+        end
+
+        def self.title_error
+            warn("Error, el título contenía caracteres ilegales")
+            warn("Evite usar \\0, /, \\ o espacios")
+        end
+
+
+
+        #utility methods
+        def self.make_text_file book, title, content
+            path = File.join(base_dir,book)
+            if Dir.exists? path
+                if (File.exist? File.join(path,title))
+                    already_exists_error "la nota " + title
+                    return
+                end
+                File.open(File.join(path, title), "w+") { |f| f.write(content) }
+            else
+                not_found_error "el libro "
             end
         end
 
-        def edit_note title, book
+        def self.make_dir path
+            begin
+                Dir.mkdir(path)
+            rescue Errno::EEXIST
+                already_exists_error BookManager::BOOK_TYPE + book
+            #rescue permissions
+            end
+        end
+
+        def self.open_dir path, dirName = ''
+            begin
+                Dir.each_child File.join(path,dirName)
+            rescue Errno::ENOENT
+                not_found_error BookManager::BOOK_TYPE + dirName
+            end
+        end
+
+        def self.rename_file title, newTitle, errorMsg
+            begin
+                File.rename(title,newTitle)
+            rescue Errno::ENOENT
+                not_found_error errorMsg + title
+            rescue SystemCallError
+                not_enough_perms_error FileManager::RENAME_ACTION errorMsg
+            end
+        end
+
+        def self.validate_name title
+            ILLEGAL_CHARS.all? { |char| !title.include? char}
+        end
+
+        def self.validate_book title
+            title ? title : "global"
+        end
+    end
+
+
+    module NoteManager
+        require 'tty-editor'
+        include FileManager
+        NOTE_TYPE = "la nota"
+        
+        def self.create_note note, book
+            FileManager::make_text_file(book,note[:title] + '.rn', note[:content])
+        end
+
+        def self.rename_note title, newTitle
+            rename_file(title, newTitle, NoteManager::NOTE_TYPE)
+        end
+
+        def self.edit_note title, book
             #begin
                 TTY::Editor.open(fetch_note title,book)
             #rescue
@@ -91,66 +126,76 @@ module RN
             #end
         end
 
-        def delete_note  title
+        def self.delete_note  title, book
             begin
-                File.delete((find_by_note title))
+                File.delete(find_note title, book)
             rescue Errno::ENOENT
                 not_found_error NoteManager::NOTE_TYPE + title
             #rescue Errno::                 search perms error
             end
         end
 
-        #single searching methods
-        def fetch_note title, book
+        def self.open_note title, book
             begin
-                Dir.each_child(File.join(default_dir,book)) do |note| 
-                    if title == note return File.absolute_path(note)
-                end
-                not_found_error NoteManager::NOTE_TYPE + title
-            rescue Errno::ENOENT
-                not_found_error BookManager::BOOK_TYPE + book
+                File.open(find_note(title,book), 'r')
+            rescue
+                
             end
         end
 
-        def find_note title
-
+        #single searching methods
+        def self.find_note title, book
+            begin
+                FileManager::open_dir(FileManager::base_dir, book).each do |note| 
+                    if title == note 
+                        return File.absolute_path(note)
+                    end
+                end
+                FileManager::not_found_error "#{NoteManager::NOTE_TYPE} #{title}"
+            rescue Errno::ENOENT
+                FileManager::not_found_error "#{BookManager::BOOK_TYPE} #{book}"
+            end
         end
 
         #group note methods
-        def show_all_notes
+        def list_notes
             notes = []
-            open_dir default_dir.each do |dir|
-                notes << all_notes_in dir
+            open_dir base_dir.each do |dir|
+                notes << (all_notes_in dir)
             end
             notes
         end
 
         def all_notes_in book
             notes = []
-            open_dir File.join(default_dir,book).each {|f| notes << f}
+            open_dir(base_dir,book).each {|f| notes << f}
             {book: book, notes: notes}
         end
     end
+
 
     module BookManager   
         include FileManager
         BOOK_TYPE = "el libro"
 
         def create_book book
+            make_dir(File.join(base_dir,book))
+        end
+
+        def rename_book title, newTitle
+            rename_file(title, newTitle, BookManager::BOOK_TYPE)
+        end
+
+        def delete_book title
             begin
-                Dir.mkdir(File.join(default_dir,book))
-            rescue Errno::EEXIST
-                not_found_error BookManager::BOOK_TYPE + book
-            #rescue permissions
+                Dir.delete(find_book title)
+            rescue Errno::ENOTEMPTY
+                cant_delete_error BookManager::BOOK_TYPE + ": no está vacío"
             end
         end
 
-        def delete_book
-            delete_file
-        end
-
-        def get_books
-            find_by_name()
+        def find_book title
+           File.absolute_path((open_dir base_dir).find {|dir| dir == title})
         end
     end
 end
