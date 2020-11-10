@@ -128,7 +128,7 @@ module RN
 
         def self.delete_note  title, book
             begin
-                File.delete(find_note title, book)
+                File.delete(title, book)
             rescue Errno::ENOENT
                 not_found_error NoteManager::NOTE_TYPE + title
             #rescue Errno::                 search perms error
@@ -189,9 +189,9 @@ module RN
 
         def self.delete_book title
             begin
-                book = find_book title
-                if book
-                    Dir.delete(book)
+                if find_book title
+
+                    Dir.delete(title)
                 else
                     FileManager.not_found_error "#{BookManager::BOOK_TYPE} #{title}"
                 end
