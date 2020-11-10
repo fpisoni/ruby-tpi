@@ -1,9 +1,8 @@
 module RN
   module Commands
     module Books
-      include BookManager
-
       class Create < Dry::CLI::Command
+        include BookManager 
         desc 'Create a book'
 
         argument :name, required: true, desc: 'Name of the book'
@@ -14,11 +13,12 @@ module RN
         ]
 
         def call(name:, **)
-          warn "TODO: Implementar creación del cuaderno de notas con nombre '#{name}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          create_book(name)
         end
       end
 
       class Delete < Dry::CLI::Command
+        include BookManager
         desc 'Delete a book'
 
         argument :name, required: false, desc: 'Name of the book'
@@ -37,6 +37,7 @@ module RN
       end
 
       class List < Dry::CLI::Command
+        include BookManager
         desc 'List books'
 
         example [
@@ -44,11 +45,12 @@ module RN
         ]
 
         def call(*)
-          warn "TODO: Implementar listado de los cuadernos de notas.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          list_books.each {|book| puts book}
         end
       end
 
       class Rename < Dry::CLI::Command
+        include BookManager
         desc 'Rename a book'
 
         argument :old_name, required: true, desc: 'Current name of the book'
@@ -61,7 +63,11 @@ module RN
         ]
 
         def call(old_name:, new_name:, **)
-          warn "TODO: Implementar renombrado del cuaderno de notas con nombre '#{old_name}' para que pase a llamarse '#{new_name}'.\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          if (FileManager.validate_name new_name)
+            rename_book old_name, new_name
+          else
+            FileManager.title_error
+          end
         end
       end
     end

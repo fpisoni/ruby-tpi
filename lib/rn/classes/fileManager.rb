@@ -23,7 +23,7 @@ module RN
 
         #constants methods
         def self.global_dir
-            File.join(base_dir,'global')
+            File.join(base_dir,"global")
         end
 
         def self.base_dir
@@ -59,7 +59,7 @@ module RN
             path = File.join(base_dir,book)
             if Dir.exists? path
                 if (File.exist? File.join(path,title))
-                    already_exists_error "la nota " + title
+                    already_exists_error "#{NoteManager::NOTE_TYPE} #{title}"
                     return
                 end
                 File.open(File.join(path, title), "w+") { |f| f.write(content) }
@@ -68,11 +68,11 @@ module RN
             end
         end
 
-        def self.make_dir path
+        def make_dir book
             begin
-                Dir.mkdir(path)
+                Dir.mkdir(File.join(FileManager.base_dir,book))
             rescue Errno::EEXIST
-                already_exists_error BookManager::BOOK_TYPE + book
+                FileManager.already_exists_error "#{BookManager::BOOK_TYPE} #{book}"
             #rescue permissions
             end
         end
@@ -81,17 +81,17 @@ module RN
             begin
                 Dir.each_child File.join(path,dirName)
             rescue Errno::ENOENT
-                not_found_error BookManager::BOOK_TYPE + dirName
+                not_found_error "#{BookManager::BOOK_TYPE} #{dirName}"
             end
         end
 
-        def self.rename_file title, newTitle, errorMsg
+        def rename_file title, newTitle, errorMsg
             begin
-                File.rename(title,newTitle)
+                File.rename(File.join(FileManager.base_dir,title),File.join(FileManager.base_dir,newTitle))
             rescue Errno::ENOENT
-                not_found_error errorMsg + title
+                FileManager.not_found_error "#{errorMsg} #{title}"
             rescue SystemCallError
-                not_enough_perms_error FileManager::RENAME_ACTION errorMsg
+                FileManager.not_enough_perms_error "#{FileManager::RENAME_ACTION} #{errorMsg}"
             end
         end
 
@@ -152,6 +152,7 @@ module RN
                     end
                 end
                 FileManager::not_found_error "#{NoteManager::NOTE_TYPE} #{title}"
+
             rescue Errno::ENOENT
                 FileManager::not_found_error "#{BookManager::BOOK_TYPE} #{book}"
             end
@@ -179,23 +180,32 @@ module RN
         BOOK_TYPE = "el libro"
 
         def create_book book
-            make_dir(File.join(base_dir,book))
+            make_dir(book)
         end
 
         def rename_book title, newTitle
             rename_file(title, newTitle, BookManager::BOOK_TYPE)
         end
 
-        def delete_book title
+        def self.delete_book title
             begin
-                Dir.delete(find_book title)
+                book = find_book title
+                if book
+                    Dir.delete(book)
+                else
+                    FileManager.not_found_error "#{BookManager::BOOK_TYPE} #{title}"
+                end
             rescue Errno::ENOTEMPTY
-                cant_delete_error BookManager::BOOK_TYPE + ": no está vacío"
+                FileManager.cant_delete_error "#{BookManager::BOOK_TYPE}: no está vacío"
             end
         end
 
+        def list_books
+            Dir.each_child(FileManager.base_dir).filter {|book| book != "global"}
+        end
+
         def find_book title
-           File.absolute_path((open_dir base_dir).find {|dir| dir == title})
+            FileManager.open_dir FileManager.base_dir.include? title
         end
     end
 end
