@@ -31,8 +31,11 @@ module RN
         ]
 
         def call(name: nil, **options)
-          global = options[:global]
-          warn "TODO: Implementar borrado del cuaderno de notas con nombre '#{name}' (global=#{global}).\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          if (name || options[:global])
+            delete_book (options[:global]? '.global' : name.to_s)
+          else
+            #puts example
+          end
         end
       end
 

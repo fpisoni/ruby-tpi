@@ -13,22 +13,23 @@ module RN
         end
 
         def self.create_base_dir 
-            make_dir base_dir unless Dir.exist? base_dir
+            Dir.mkdir base_dir unless Dir.exist? base_dir
         end
 
         def self.create_global_dir 
-            make_dir global_dir unless Dir.exist? global_dir
+            Dir.mkdir global_dir unless Dir.exist? global_dir
         end
 
 
         #constants methods
-        def self.global_dir
-            File.join(base_dir,"global")
-        end
-
         def self.base_dir
             File.join(Dir.home,".my_rns")
         end
+
+        def self.global_dir
+            File.join(base_dir,".global")
+        end
+
 
         #errors
         def self.not_found_error msg
@@ -49,6 +50,7 @@ module RN
 
         def self.title_error
             warn("Error, el título contenía caracteres ilegales")
+            warn("Evite comenzar con .")
             warn("Evite usar \\0, /, \\ o espacios")
         end
 
@@ -68,7 +70,7 @@ module RN
             end
         end
 
-        def make_dir book
+        def self.make_dir book
             begin
                 Dir.mkdir(File.join(FileManager.base_dir,book))
             rescue Errno::EEXIST
@@ -85,7 +87,7 @@ module RN
             end
         end
 
-        def rename_file title, newTitle, errorMsg
+        def self.rename_file title, newTitle, errorMsg
             begin
                 File.rename(File.join(FileManager.base_dir,title),File.join(FileManager.base_dir,newTitle))
             rescue Errno::ENOENT
@@ -96,11 +98,11 @@ module RN
         end
 
         def self.validate_name title
-            ILLEGAL_CHARS.all? { |char| !title.include? char}
+            ILLEGAL_CHARS.all? { |char| !title.include? char} && (!title.start_with? '.')
         end
 
         def self.validate_book title
-            title ? title : "global"
+            title ? (validate_name title) : ".global"
         end
     end
 
@@ -161,7 +163,7 @@ module RN
         #group note methods
         def list_notes
             notes = []
-            open_dir base_dir.each do |dir|
+            open_dir FileManager.base_dir.each do |dir|
                 notes << (all_notes_in dir)
             end
             notes
@@ -169,7 +171,7 @@ module RN
 
         def all_notes_in book
             notes = []
-            open_dir(base_dir,book).each {|f| notes << f}
+            open_dir(FileManager.base_dir,book).each {|f| notes << f}
             {book: book, notes: notes}
         end
     end
@@ -180,32 +182,31 @@ module RN
         BOOK_TYPE = "el libro"
 
         def create_book book
-            make_dir(book)
+            FileManager.make_dir(book)
         end
 
         def rename_book title, newTitle
-            rename_file(title, newTitle, BookManager::BOOK_TYPE)
+            FileManager.rename_file(title, newTitle, BookManager::BOOK_TYPE)
         end
 
-        def self.delete_book title
-            begin
-                if find_book title
-
-                    Dir.delete(title)
-                else
-                    FileManager.not_found_error "#{BookManager::BOOK_TYPE} #{title}"
+        def delete_book title
+            if find_book title
+                dir = File.join(FileManager.base_dir,title)
+                if !Dir.children(dir).length.zero?
+                    Dir.each_child(dir) {|note| File.delete(File.join(dir,note))}
                 end
-            rescue Errno::ENOTEMPTY
-                FileManager.cant_delete_error "#{BookManager::BOOK_TYPE}: no está vacío"
+                Dir.delete(dir)
+            else
+                FileManager.not_found_error "#{BookManager::BOOK_TYPE} #{title}"
             end
         end
 
         def list_books
-            Dir.each_child(FileManager.base_dir).filter {|book| book != "global"}
+            Dir.each_child(FileManager.base_dir).reject {|book| book.start_with? '.'}
         end
 
         def find_book title
-            FileManager.open_dir FileManager.base_dir.include? title
+            FileManager.open_dir(FileManager.base_dir).include? title
         end
     end
 end
