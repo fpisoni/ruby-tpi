@@ -46,8 +46,7 @@ $ rn [args]
 
 ## Desarrollo
 
-Esta sección provee algunos tips para el desarrollo de tu entrega a partir de esta
-plantilla.
+Esta sección provee algunos tips para la extensión del proyecto en caso de 
 
 ### Instalación de dependencias
 
