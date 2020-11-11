@@ -113,7 +113,7 @@ module RN
         NOTE_TYPE = "la nota"
         
         def self.create_note note, book
-            FileManager::make_text_file(book,note[:title] + '.rn', note[:content])
+            FileManager.make_text_file(book,note[:title] + '.rn', note[:content])
         end
 
         def self.rename_note title, newTitle
@@ -121,19 +121,14 @@ module RN
         end
 
         def self.edit_note title, book
-            #begin
-                TTY::Editor.open(fetch_note title,book)
-            #rescue
-            #
-            #end
+            TTY::Editor.open(fetch_note title,book)
         end
 
         def self.delete_note  title, book
             begin
                 File.delete(title, book)
             rescue Errno::ENOENT
-                not_found_error NoteManager::NOTE_TYPE + title
-            #rescue Errno::                 search perms error
+                not_found_error "#{NoteManager::NOTE_TYPE} #{title}"
             end
         end
 
