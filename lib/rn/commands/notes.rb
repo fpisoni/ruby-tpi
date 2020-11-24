@@ -1,7 +1,6 @@
 module RN
   module Commands
     module Notes
-      include NoteManager
 
       class Create < Dry::CLI::Command
         desc 'Create a note'
@@ -17,13 +16,7 @@ module RN
         ]
 
         def call(title:, content:, **options)
-          if (RN::FileManager.validate_name title and RN::FileManager.validate_name (options[:book].to_s))
-            RN::NoteManager.create_note(
-              {title: "#{title}", content: "#{content}"}, 
-              RN::FileManager.validate_book(options[:book]))
-          else
-            RN::NoteManager.title_error 
-          end
+          Note.new(title, content, options[:book])
         end
       end
 
@@ -40,9 +33,7 @@ module RN
         ]
 
         def call(title:, **options)
-          book = options[:book]
-          RN::NoteManager.delete_note(title, RN::FileManager.validate_book(options[:book]))
-          #warn "TODO: Implementar borrado de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          
         end
       end
 
@@ -97,9 +88,15 @@ module RN
         ]
 
         def call(**options)
-          book = options[:book]
-          global = options[:global]
-          warn "TODO: Implementar listado de las notas del libro '#{book}' (global=#{global}).\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          filter = 
+            if options[:global]
+              '.global'
+            elsif !(options[:book].nil?)
+              options[:book]
+            else
+              nil
+            end
+          p book
         end
       end
 
@@ -116,9 +113,8 @@ module RN
         ]
 
         def call(title:, **options)
-          book = options[:book]
           warn "TODO: Implementar vista de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
-          get_note(title,options[:book].to_s)
+          Note.fetch(title, options[:book] || '.global' ).show
         end
       end
     end

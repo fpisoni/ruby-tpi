@@ -2,7 +2,6 @@ module RN
   module Commands
     module Books
       class Create < Dry::CLI::Command
-        include BookManager 
         desc 'Create a book'
 
         argument :name, required: true, desc: 'Name of the book'
@@ -13,12 +12,11 @@ module RN
         ]
 
         def call(name:, **)
-          create_book(name)
+          Book.new(name)
         end
       end
 
       class Delete < Dry::CLI::Command
-        include BookManager
         desc 'Delete a book'
 
         argument :name, required: false, desc: 'Name of the book'
@@ -40,7 +38,6 @@ module RN
       end
 
       class List < Dry::CLI::Command
-        include BookManager
         desc 'List books'
 
         example [
@@ -48,12 +45,11 @@ module RN
         ]
 
         def call(*)
-          list_books.each {|book| puts book}
+          puts Book.list_books
         end
       end
 
       class Rename < Dry::CLI::Command
-        include BookManager
         desc 'Rename a book'
 
         argument :old_name, required: true, desc: 'Current name of the book'

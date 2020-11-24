@@ -1,12 +1,16 @@
 module RN
   autoload :VERSION, 'rn/version'
   autoload :Commands, 'rn/commands'
-  autoload :FileManager, 'rn/classes/fileManager'
-  autoload :NoteManager, 'rn/classes/fileManager'
-  autoload :BookManager, 'rn/classes/fileManager'
 
-  # Agregar aquí cualquier autoload que sea necesario para que se cargue las clases y
-  # módulos del modelo de datos.
-  # Por ejemplo:
-  # autoload :Note, 'rn/note'
+  #classes
+  class_path = 'rn/classes'
+  autoload :RNFile, "#{class_path}/RNFile"
+  autoload :Note, "#{class_path}/Note"
+  autoload :Book, "#{class_path}/Book"
+
+  #modules  
+  mod_path = 'rn/modules'
+  autoload :Errors, "#{mod_path}/errors"
+  autoload :Paths, "#{mod_path}/paths"
+  autoload :FileOperations, "#{mod_path}/file_operations"
 end
