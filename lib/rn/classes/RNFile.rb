@@ -1,10 +1,8 @@
 module RN
    class RNFile
 
-      include FileOperations
+      include FileUtils
       include Paths
-
-      ABSTRACT_ERROR = "Calling abstract method, should be defined in subclass"
 
       attr_accessor :title, :path
 
@@ -14,11 +12,7 @@ module RN
       end
 
       def to_s
-         @title
-      end
-
-      def delete
-         raise ABSTRACT_ERROR
+         name
       end
    end
 end

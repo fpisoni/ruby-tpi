@@ -12,5 +12,5 @@ module RN
   mod_path = 'rn/modules'
   autoload :Errors, "#{mod_path}/errors"
   autoload :Paths, "#{mod_path}/paths"
-  autoload :FileOperations, "#{mod_path}/file_operations"
+  autoload :FileUtils, "#{mod_path}/file_utils"
 end

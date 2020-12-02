@@ -2,6 +2,8 @@ module RN
   module Commands
     module Books
       class Create < Dry::CLI::Command
+        include Paths
+
         desc 'Create a book'
 
         argument :name, required: true, desc: 'Name of the book'
@@ -12,11 +14,14 @@ module RN
         ]
 
         def call(name:, **)
-          Book.new(name)
+          Book.new(Paths.sanitize name).save
         end
       end
 
       class Delete < Dry::CLI::Command
+        include Paths
+        include Errors
+
         desc 'Delete a book'
 
         argument :name, required: false, desc: 'Name of the book'
@@ -29,27 +34,36 @@ module RN
         ]
 
         def call(name: nil, **options)
-          if (name || options[:global])
-            delete_book (options[:global]? '.global' : name.to_s)
+          book = Book.fetch(options[:global] ? Paths.global : Paths.sanitize(name))
+          if !!book
+            book.delete
           else
-            #puts example
+            Errors.book_not_found_error name
           end
         end
       end
 
       class List < Dry::CLI::Command
+
         desc 'List books'
 
         example [
           '          # Lists every available book'
         ]
 
+        def pretty_print book:, notes:
+          puts "\nLibro: #{book}"
+          puts (notes > 0 ? "  -Tiene #{notes} notas" : "  -Está vacío")
+        end
+
         def call(*)
-          puts Book.list_books
+          Book.list_books.map { |book| pretty_print book }
         end
       end
 
       class Rename < Dry::CLI::Command
+        include Paths
+        include Errors
         desc 'Rename a book'
 
         argument :old_name, required: true, desc: 'Current name of the book'
@@ -62,10 +76,11 @@ module RN
         ]
 
         def call(old_name:, new_name:, **)
-          if (FileManager.validate_name new_name)
-            rename_book old_name, new_name
+          book = Book.fetch(old_name)
+          if !!book
+            book.rename Paths.sanitize new_name
           else
-            FileManager.title_error
+            Errors.book_not_found_error old_name
           end
         end
       end

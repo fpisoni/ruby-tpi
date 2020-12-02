@@ -1,10 +1,13 @@
 module RN
     module Paths
-        CREATE_ACTION = "crear"
-        RENAME_ACTION = "renombrar"
-        READ_ACTION = "leer"
-        DELETE_ACTION = "eliminar"
-        ILLEGAL_CHARS = %w("\0","/","\"," ")
+        ILLEGAL_CHARS_REGEX = /[\.\/\s,]/
+        REPLACEMENT_HASH = {
+            '.' => '-',
+            ',' => '-',
+            ' ' => '_',
+            '/' => '_',
+        }
+
 
         #initializion
         def self.included(base)
@@ -32,23 +35,35 @@ module RN
         end
 
         def self.global_dir
-            book_path '.global'
+            book_path global
         end
 
         def self.book_path title
-            File.join(base_dir,title)
+            File.join(base_dir, title)
         end
 
-        def self.note_path title, book = '.global'
+        def self.note_path title, book
             File.join(base_dir,book,title)
         end
 
-        def validate_name title
-            ILLEGAL_CHARS.all? { |char| !title.include? char}
+        def self.global
+            'global'
         end
 
-        def validate_book title
-            title ? (validate_name title) : ".global"
+        def book_from_note path
+            File.basename(File.dirname(path))
+        end
+
+        def self.sanitize title
+            sanitized = title.gsub(ILLEGAL_CHARS_REGEX,REPLACEMENT_HASH)
+            if sanitized != title
+                Errors.title_error
+            end
+            sanitized
+        end
+
+        def self.sanitize_book title
+            title ? sanitize(title) : global
         end
     end
 end

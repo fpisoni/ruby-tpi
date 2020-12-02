@@ -3,6 +3,7 @@ module RN
     module Notes
 
       class Create < Dry::CLI::Command
+        include Paths
         desc 'Create a note'
 
         argument :title, required: true, desc: 'Title of the note'
@@ -16,11 +17,19 @@ module RN
         ]
 
         def call(title:, content:, **options)
-          Note.new(title, content, options[:book])
+          Note.new(
+            Paths.sanitize(title), 
+            Paths.sanitize_book(options[:book]
+          )).save content
         end
       end
 
       class Delete < Dry::CLI::Command
+
+        def confirm(title)
+          
+        end
+
         desc 'Delete a note'
 
         argument :title, required: true, desc: 'Title of the note'
@@ -33,7 +42,12 @@ module RN
         ]
 
         def call(title:, **options)
-          
+          note = Note.fetch(
+              Paths.sanitize(title),
+              Paths.sanitize_book(options[:book]))
+          if !!note
+            note.delete
+          end
         end
       end
 
@@ -50,8 +64,12 @@ module RN
         ]
 
         def call(title:, **options)
-          book = options[:book]
-          warn "TODO: Implementar modificación de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          note = Note.fetch(
+            Paths.sanitize(title), 
+            Paths.sanitize_book(options[:book]))
+          if !!note
+            note.edit
+          end
         end
       end
 
@@ -69,12 +87,18 @@ module RN
         ]
 
         def call(old_title:, new_title:, **options)
-          book = options[:book]
-          warn "TODO: Implementar cambio del título de la nota con título '#{old_title}' hacia '#{new_title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
+          note = Note.fetch(
+            Paths.sanitize(old_title), 
+            Paths.sanitize_book(options[:book]))
+          if !!note
+            note.rename(Paths.sanitize(new_title))
+          end
         end
       end
 
       class List < Dry::CLI::Command
+        include Errors
+
         desc 'List notes'
 
         option :book, type: :string, desc: 'Book'
@@ -87,20 +111,40 @@ module RN
           '--book Memoires  # Lists notes from the book named "Memoires"'
         ]
 
-        def call(**options)
-          filter = 
-            if options[:global]
-              '.global'
-            elsif !(options[:book].nil?)
-              options[:book]
+        def pretty_print book:, notes:, length:
+          puts "Cuaderno: #{book}"
+          if length > 0 
+            notes.map { |note| puts "  - #{note}" } 
+            puts "  Cantidad #{length}"
+          else
+            puts "  El libro está vacío"
+          end
+          puts
+        end
+
+        def filter_list options
+          if (options[:global])
+            [Book.fetch(Paths.global).list_notes]
+          elsif (options[:book])
+            book = Book.fetch(options[:book])
+            if !!book
+              [book.list_notes]
             else
-              nil
+              Errors.book_not_found_error  options[:book]
             end
-          p book
+          else
+            Note.all_notes
+          end
+        end
+
+        def call(**options)
+          books_notes = filter_list options
+          books_notes.map { |book_notes| pretty_print book_notes } unless !books_notes
         end
       end
 
       class Show < Dry::CLI::Command
+        include Paths
         desc 'Show a note'
 
         argument :title, required: true, desc: 'Title of the note'
@@ -112,9 +156,18 @@ module RN
           'thoughts --book Memoires    # Shows a note titled "thoughts" from the book "Memoires"'
         ]
 
+        def pretty_print title:, content:
+          puts "Nota: #{title}"
+          puts content
+        end
+
         def call(title:, **options)
-          warn "TODO: Implementar vista de la nota con título '#{title}' (del libro '#{book}').\nPodés comenzar a hacerlo en #{__FILE__}:#{__LINE__}."
-          Note.fetch(title, options[:book] || '.global' ).show
+          note = Note.fetch(
+            Paths.sanitize(title),
+            Paths.sanitize_book(options[:book]))
+          if !!note
+            pretty_print note.show
+          end
         end
       end
     end

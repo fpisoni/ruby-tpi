@@ -1,55 +1,78 @@
 module RN
     class Book < RNFile
         BOOK_MSG = "el libro"
-        
-        @@all_books = []
-        @notes = []
 
+        #class methods
         class << self
-            attr_reader :all_books
+            def from_dir path
+                new File.basename(path), path
+            end
 
             def list_books
-                @@all_books.map(&:title)#.filter {|title| !title.start_with? '.'}
+                all.map(&:show)
             end
 
-            def exists? title
-                @@all_books.any? {|book| book.title == title}
+            def all
+                Dir.children(Paths.base_dir).map do |title|
+                    Book.from_dir(Paths.book_path(title))
+                end
             end
 
-            def fetch_book title
-                @@all_books.find {|title| book.title == title}
+            def fetch title
+               all.find { |book| book.title == title  }
             end
         end
 
-        def initialize title
-            @@all_books << self
-            super(title, Paths.book_path(title))
-            create_book @path
+
+        #creation
+        def initialize title, path = Paths.book_path(title)
+            super(title, path)
         end
 
+        def save
+            create_book @path, @title
+        end
+
+
+        #operations
         def delete
-            @notes.map &:delete                      
-            FileOperations.delete_book self
-            @@all_books.delete_if {|book| book.title == title}
-        end
-
-        def rename title, newTitle
-            if rename_book(@path, Path.book_path(newTitle), newTitle)
-                @title = newTitle
-                warn("El libro #{title} se ha renombrado exitosamente a #{newTitle}")
+            notes.map { |note| Note.new(note, @title).delete }
+            if !!delete_book(self)
+                warn("El #{global? ? '' : 'cuaderno'} #{name} fue #{global? ? 'vaciado' : 'eliminado'} correctamente")
             end
         end
 
-        def add_note note
-            @notes << note
+        def rename newTitle
+            if !!(rename_file(@path, Paths.book_path(newTitle), newTitle))
+                warn("El libro #{@title} se ha renombrado exitosamente a #{newTitle}")
+                @title = newTitle
+            end
         end
 
-        def notes
-            @notes || warn("El libro #{title} está vacío")          #move to errors?
+        def show
+            { book: name, notes: notes.length }
         end
 
         def list_notes
-            { book: self.title, notes: @notes.map(&:title) }
+            { book: name, notes: notes.map { |note| File.basename(note,'.rn')  }, length: notes.length }
+        end
+
+
+        #utils
+        def name
+            global? ? 'Cuaderno global' : @title
+        end
+
+        def global?
+            @title == Paths.global
+        end
+
+        def notes
+            book_notes(self)
+        end
+
+        def find_note title
+            notes.find { |note| note == title }
         end
     end
 end
