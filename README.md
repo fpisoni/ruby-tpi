@@ -177,7 +177,7 @@ Las notas cuentan con seis funcionalidades:
 
 ## Desarrollo
 
-Esta sección provee algunos tips para la extensión del proyecto en caso de 
+Esta sección provee algunos tips para la extensión del proyecto.
 
 ### Instalación de dependencias
 
