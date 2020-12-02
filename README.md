@@ -78,8 +78,8 @@ Los cuadernos cuentan con cuatro funcionalidades:
    ```bash
     rn books create BOOK 
    ```
-   
-    Crea el cuaderno BOOK
+
+   Crea el cuaderno BOOK
 
    2. **Eliminación**
 
