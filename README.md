@@ -79,7 +79,7 @@ Los cuadernos cuentan con cuatro funcionalidades:
     rn books create BOOK 
    ```
    
-     > Crea el cuaderno BOOK
+    Crea el cuaderno BOOK
 
    2. **Eliminación**
 
@@ -87,10 +87,10 @@ Los cuadernos cuentan con cuatro funcionalidades:
     rn books create BOOK "[--global]"
    ```
 
-   > Elimina el cuaderno BOOK y **todas** sus notas
+   Elimina el cuaderno BOOK y **todas** sus notas
 
-   El comando acepta el parámetro ` --global `, lo cual **ignora** el nombre otorgado y 
-   **vacía** el cuaderno global.
+   > El comando acepta el parámetro ` --global `, lo cual **ignora** el nombre otorgado y 
+   > **vacía** el cuaderno global.
 
    3. **Listado**
 
@@ -98,7 +98,7 @@ Los cuadernos cuentan con cuatro funcionalidades:
     rn books list
    ```
 
-   > Lista todos los cuadernos y cuántas notas tiene cada uno
+  Lista todos los cuadernos y cuántas notas tiene cada uno
 
    4. **Renombrado**
 
@@ -106,7 +106,7 @@ Los cuadernos cuentan con cuatro funcionalidades:
     rn books rename BOOK NEW_NAME
    ```
 
-   > Renombra el cuaderno BOOK a NEW_NAME
+  Renombra el cuaderno BOOK a NEW_NAME
 
 #### Notas
 
@@ -118,9 +118,9 @@ Las notas cuentan con seis funcionalidades:
     rn notes create NOTE CONTENT "[--book BOOK]"
    ```
 
-   > Crea la nota NOTE con el contenido CONTENT.
+  Crea la nota NOTE con el contenido CONTENT.
    
-   En caso de proporcionarse el argumento opcional `--book`, se guarda en el cuaderno BOOK.
+  > En caso de proporcionarse el argumento opcional `--book`, se guarda en el cuaderno BOOK.
 
    2. **Eliminación**
 
@@ -128,9 +128,10 @@ Las notas cuentan con seis funcionalidades:
     rn notes delete NOTE "[--book BOOK]"
    ```
 
-   > Elimina la nota NOTE.
-   En caso de proporcionarse el argumento opcional `--book`, se buscará en el cuaderno BOOK.
-   De no hacerlo, se la buscará en el Cuaderno global.
+   Elimina la nota NOTE.
+  
+  > En caso de proporcionarse el argumento opcional `--book`, se buscará en el cuaderno BOOK.
+  > De no hacerlo, se la buscará en el Cuaderno global.
 
    3. **Listado**
 
@@ -138,11 +139,11 @@ Las notas cuentan con seis funcionalidades:
     rn notes list "[--global --book BOOK]"
    ```
 
-   > Lista notas. Por defecto, listará todas las notas existentes.
+   Lista notas. Por defecto, listará todas las notas existentes.
 
-   En caso de recibir el argumento `--book`, se listará solo las existentes en el cuaderno BOOK. 
-   Si se proporciona el argumento `--global`, casuará que se **ignore** el parámetro 
-   `--book` y se liste el cuaderno global.
+  > En caso de recibir el argumento `--book`, se listará solo las existentes en el cuaderno BOOK. 
+  > Si se proporciona el argumento `--global`, casuará que se **ignore** el parámetro 
+  > `--book` y se liste el cuaderno global.
 
    4. **Edición**
 
@@ -150,9 +151,9 @@ Las notas cuentan con seis funcionalidades:
     rn notes edit NOTE "[--book BOOK]"
    ```
 
-   > Abre el editor definido en $EDITOR para modificar el contenido de NOTE
+   Abre el editor definido en $EDITOR para modificar el contenido de NOTE
 
-   En caso de recibir el argumento `--book`, se buscará en el cuaderno BOOK (en el global en su ausencia)
+  > En caso de recibir el argumento `--book`, se buscará en el cuaderno BOOK (en el global en su ausencia)
 
    5. **Renombrado**
 
@@ -160,9 +161,9 @@ Las notas cuentan con seis funcionalidades:
     rn notes retitle NOTE NEW_NAME "[--book BOOK]"
    ```
 
-   > Cambia el nombre de NOTE a NEW_NAME
+  Cambia el nombre de NOTE a NEW_NAME
 
-   En caso de recibir el argumento `--book`, se buscará en el cuaderno BOOK (en el global en su ausencia)
+  > En caso de recibir el argumento `--book`, se buscará en el cuaderno BOOK (en el global en su ausencia)
 
    6. **Mostrado**
 
@@ -170,9 +171,9 @@ Las notas cuentan con seis funcionalidades:
     rn notes show NOTE "[--book BOOK]"
    ```
 
-   > Muestra el contenido de la nota NOTE
+   Muestra el contenido de la nota NOTE
 
-   En caso de recibir el argumento `--book`, se buscará en el cuaderno BOOK (en el global en su ausencia)
+  > En caso de recibir el argumento `--book`, se buscará en el cuaderno BOOK (en el global en su ausencia)
 
 
 ## Desarrollo
