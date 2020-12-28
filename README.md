@@ -63,9 +63,9 @@ $ rn [args]
 (esta forma será la utilizada para explicar el uso básico de RN)
 
 > Notá que para la ejecución de la herramienta, es necesario tener una versión reciente de
-> Ruby (2.5 o posterior, preferentemente 2.7.2) y tener instaladas sus dependencias, las cuales se manejan con
-> Bundler. Para más información sobre la instalación de las dependencias, consultar la
-> siguiente sección ("Desarrollo").
+> Ruby (2.5 o posterior, preferentemente 2.7.2) y tener instaladas sus dependencias, las cuales 
+> se manejan con Bundler. Para más información sobre la instalación de las dependencias, consultar 
+> la sección Desarrollo.
 
 ### Comandos
 

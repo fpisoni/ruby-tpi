@@ -3,7 +3,6 @@ module RN
     module Notes
 
       class Create < Dry::CLI::Command
-        include Paths
         desc 'Create a note'
 
         argument :title, required: true, desc: 'Title of the note'
@@ -25,10 +24,6 @@ module RN
       end
 
       class Delete < Dry::CLI::Command
-
-        def confirm(title)
-          
-        end
 
         desc 'Delete a note'
 
@@ -52,6 +47,7 @@ module RN
       end
 
       class Edit < Dry::CLI::Command
+
         desc 'Edit the content a note'
 
         argument :title, required: true, desc: 'Title of the note'
@@ -74,6 +70,7 @@ module RN
       end
 
       class Retitle < Dry::CLI::Command
+
         desc 'Retitle a note'
 
         argument :old_title, required: true, desc: 'Current title of the note'
@@ -97,7 +94,6 @@ module RN
       end
 
       class List < Dry::CLI::Command
-        include Errors
 
         desc 'List notes'
 
@@ -139,12 +135,12 @@ module RN
 
         def call(**options)
           books_notes = filter_list options
-          books_notes.map { |book_notes| pretty_print book_notes } unless !books_notes
+          books_notes.map { |book_notes| pretty_print **book_notes } unless !books_notes
         end
       end
 
       class Show < Dry::CLI::Command
-        include Paths
+
         desc 'Show a note'
 
         argument :title, required: true, desc: 'Title of the note'
@@ -166,8 +162,25 @@ module RN
             Paths.sanitize(title),
             Paths.sanitize_book(options[:book]))
           if !!note
-            pretty_print note.show
+            pretty_print **(note.show)
           end
+        end
+      end
+
+      class Export < Dry::CLI::Command
+
+        desc 'Export a note'
+
+        argument :note, required: true, desc: 'Name of the book to export'
+
+        example [
+          '           # Exports all the notes in all the books',
+          '--global   # Exports all the notes in the global book',
+          '"My book"  # Exports all the notes in the book "My book"'
+        ]
+
+        def call(book:, **options)
+
         end
       end
     end

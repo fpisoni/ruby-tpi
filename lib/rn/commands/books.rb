@@ -2,7 +2,6 @@ module RN
   module Commands
     module Books
       class Create < Dry::CLI::Command
-        include Paths
 
         desc 'Create a book'
 
@@ -19,8 +18,6 @@ module RN
       end
 
       class Delete < Dry::CLI::Command
-        include Paths
-        include Errors
 
         desc 'Delete a book'
 
@@ -57,13 +54,12 @@ module RN
         end
 
         def call(*)
-          Book.list_books.map { |book| pretty_print book }
+          Book.list_books.map { |book| pretty_print **book }
         end
       end
 
       class Rename < Dry::CLI::Command
-        include Paths
-        include Errors
+
         desc 'Rename a book'
 
         argument :old_name, required: true, desc: 'Current name of the book'
@@ -82,6 +78,23 @@ module RN
           else
             Errors.book_not_found_error old_name
           end
+        end
+      end
+
+      class Export < Dry::CLI::Command
+
+        desc 'Export a book'
+
+        argument :book, required: true, desc: 'Name of the book to export'
+
+        example [
+          '           # Exports all the notes in all the books',
+          '--global   # Exports all the notes in the global book',
+          '"My book"  # Exports all the notes in the book "My book"'
+        ]
+
+        def call(book:, **options)
+
         end
       end
     end
