@@ -1,0 +1,9 @@
+<p id="notice"><%= notice %></p>
+<h1> Note: <%= @note.name %></h1>
+<h3> Content </h3>
+
+<div> <%= @note.content %> </div>
+
+<%= link_to 'Edit', edit_note_path(@note) %> |
+<%= link_to 'Export', export_note_path(@note) %> |
+<%= link_to 'Back', notes_path %>

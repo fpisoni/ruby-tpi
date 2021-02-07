@@ -1,0 +1,39 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Your notes</h1>
+<%= form_with url: notes_path, method: :get do |f| %>
+  <h3> Filter your notes </h3>
+  <%= f.collection_select(:filter, @user_books, :id, :name, {prompt: 'No filter'}) %>
+  <%= f.submit "Apply" %>
+<% end %>
+<% if @notes.length > 0 %>
+  <table>
+    <thead>
+      <tr>
+        <th> Name </th>
+        <th> Content </th>
+        <th colspan="4">Options</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @notes.each do |note| %>
+        <tr>
+          <td><%= note.name %></td>
+          <td><%= note.content.length >= 40 ? "#{note.content.first 40}..." : note.content  %></td>
+          <td><%= link_to 'Show', note %></td>
+          <td><%= link_to 'Export', export_note_path(note) %></td>
+          <td><%= link_to 'Edit', edit_note_path(note) %></td>
+          <td><%= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <%= @book ? "The book #{@book.name} has no notes yet." : "You have created no notes yet" %>
+<% end %>
+
+<br>
+
+<%= link_to 'New Note', new_note_path %>
+<%= link_to 'Home', root_path %>

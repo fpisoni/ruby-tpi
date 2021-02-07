@@ -1,0 +1,21 @@
+<h1> Exported book: <%= link_to @book.name, book_path(@book) %> </h1>
+<div>
+    <% if @exported_book[:exported_notes].length > 0 %>
+        <h2> Notes: <%= @exported_book[:exported_notes] %> </h2>
+        <% @exported_book[:exported_notes].each do |e| %>
+        <br>
+            <div>
+                Note: <%= e[:note] %>
+                Content:
+                <div>
+                    <%= sanitize e[:converted_content] %>
+                </div>
+            </div>
+        <% end %>
+        <br>
+    <% else %>
+        <p>
+            This book has no notes yet.
+        </p>
+    <% end %>
+</div>
