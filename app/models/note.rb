@@ -4,9 +4,7 @@ class Note < ApplicationRecord
         presence: true, 
         length: { minimum: 3, maximum: 15}
     validates :content, 
-        presence: true,
-        length: { maximum: 255 }
-
+        presence: true
 
     belongs_to :user
     belongs_to :book

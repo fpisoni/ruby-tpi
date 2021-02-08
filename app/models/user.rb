@@ -9,12 +9,16 @@ class User < ApplicationRecord
         presence: true, 
         length: { minimum: 3, maximum: 15}
     
-    after_initialize :create_global_book
+    after_save :create_global_book
     
     has_secure_password    
     has_many :books
 
     def create_global_book
-        Book.create(user:self, name:'Global book') if self.new_record?
+        Book.create(user:self, name:'Global book')
+    end
+
+    def notes
+        self.books.map { |b| b.notes }.flatten
     end
 end

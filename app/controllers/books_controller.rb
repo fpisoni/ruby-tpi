@@ -8,6 +8,7 @@ class BooksController < ApplicationController
   end
 
   def show
+    @show_notes = @book.notes.first(5)
   end
 
   def new
@@ -45,7 +46,7 @@ class BooksController < ApplicationController
   end
 
   def destroy
-    @book.destroy
+    @book.global? ? @book.notes.map { |note| note.destroy } : @book.destroy
     respond_to do |format|
       format.html { redirect_to books_url, notice: 'Book was successfully destroyed.' }
       format.json { head :no_content }
@@ -58,7 +59,6 @@ class BooksController < ApplicationController
 
   def mass_export
     @exported_books = @books.map { |book| book.export }
-    byebug
   end
 
   private

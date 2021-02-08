@@ -1,21 +1,29 @@
-<h1> Exported book: <%= link_to @book.name, book_path(@book) %> </h1>
-<div>
-    <% if @exported_book[:exported_notes].length > 0 %>
-        <h2> Notes: <%= @exported_book[:exported_notes] %> </h2>
-        <% @exported_book[:exported_notes].each do |e| %>
-        <br>
-            <div>
-                Note: <%= e[:note] %>
-                Content:
-                <div>
-                    <%= sanitize e[:converted_content] %>
-                </div>
+<h1 class="text-center mt-4"> Exported book: <%= link_to @book.name, book_path(@book) %> </h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8 mt-4">
+            <div class="card text-center shadow mb-5 bg-white rounded">
+                <% if @exported_book[:exported_notes].length > 0 %>
+                    <h2 class="card-header"> Showing <%= pluralize(@exported_book[:exported_notes].count, 'note') %>: </h2>
+                    <% @exported_book[:exported_notes].each do |e| %>
+                        <div class="card-body">
+                            <div class= "text-dark font-weight-bold">
+                                <%= e[:note] %>
+                            </div>
+                            <div class=".border-dark primary">
+                                Content:
+                                <%= sanitize e[:converted_content] %>
+                            </div>
+                        </div>
+                    <% end %>
+                <% else %>
+                    <div class="card-body">
+                        <p>
+                            This book has no notes yet.
+                        </p>
+                    </div>
+                <% end %>
             </div>
-        <% end %>
-        <br>
-    <% else %>
-        <p>
-            This book has no notes yet.
-        </p>
-    <% end %>
+        </div>
+    </div>
 </div>

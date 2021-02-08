@@ -1,39 +1,49 @@
 <p id="notice"><%= notice %></p>
 
-<h1>Your notes</h1>
-<%= form_with url: notes_path, method: :get do |f| %>
-  <h3> Filter your notes </h3>
-  <%= f.collection_select(:filter, @user_books, :id, :name, {prompt: 'No filter'}) %>
-  <%= f.submit "Apply" %>
-<% end %>
-<% if @notes.length > 0 %>
-  <table>
-    <thead>
-      <tr>
-        <th> Name </th>
-        <th> Content </th>
-        <th colspan="4">Options</th>
-      </tr>
-    </thead>
+<h1 class="text-center mt-4">Your notes</h1>
+<div class="container">
+  <div class="row justify-content-md-center">
+    <div class="col-8 mt-4">
+      <div class="card text-center shadow mb-5 bg-white rounded">
+        <%= form_with url: notes_path, method: :get do |f| %>
+          <h4> Filter your notes </h3>
+          <%= f.collection_select(:filter, @user_books, :id, :name, {prompt: 'No filter'}) %>
+          <%= f.submit "Apply" %>
+        <% end %>
+        <% if @notes.length > 0 %>
+        <table class="table table-hover table-striped ">
+          <thead class="thead-ligh">
+          <tr>
+            <th scope="col" > Name </th>
+            <th scope="col" > Content </th>
+            <th scope="col" > Book </th>
+            <th scope="col"  colspan="4">Options</th>
+          </tr>
+          </thead>
+          <tbody>
+            <% @notes.each do |note| %>
+              <tr>
+                <td><%= note.name %></td>
+                <td><%= note.content.length >= 40 ? "#{note.content.first 20}..." : note.content  %></td>
+                <td><%= note.book.name %></td>
+                <td><%= link_to 'Details', note, class: "btn btn-outline-dark" %></td>
+                <td><%= link_to 'Export', export_note_path(note), class: "btn btn-outline-dark" %></td>
+                <td><%= link_to 'Edit', edit_note_path(note), class: "btn btn-outline-dark" %></td>
+                <td><%= link_to 'Delete', note, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-outline-danger" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+        <% else %>
+          <div class="card-body">
+            <%= @book ? "The book #{@book.name} has no notes yet." : "You have created no notes" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <tbody>
-      <% @notes.each do |note| %>
-        <tr>
-          <td><%= note.name %></td>
-          <td><%= note.content.length >= 40 ? "#{note.content.first 40}..." : note.content  %></td>
-          <td><%= link_to 'Show', note %></td>
-          <td><%= link_to 'Export', export_note_path(note) %></td>
-          <td><%= link_to 'Edit', edit_note_path(note) %></td>
-          <td><%= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <%= @book ? "The book #{@book.name} has no notes yet." : "You have created no notes yet" %>
-<% end %>
-
-<br>
-
-<%= link_to 'New Note', new_note_path %>
-<%= link_to 'Home', root_path %>
+<div class="row justify-content-md-center">
+  <%= link_to 'New Note', new_note_path, class: "btn btn-outline-light" %>
+</div>

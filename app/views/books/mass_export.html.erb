@@ -1,25 +1,37 @@
-<h1>All books exported</h1>
-
-<div>
-    <% @exported_books.each do |book| %>
-        <h2> Book: <%= book[:book] %></h2>
-        <div>
-            <% if book[:exported_notes].length > 0 %>
-                <h3> Notes: <%= book[:exported_notes].length %> </h3>
-                <% book[:exported_notes].each do |e| %>
+<h1 class="text-center mt-4">All books exported</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8 mt-4">
+            <% @exported_books.each do |book| %>
+                <div class="card text-center shadow mb-5 bg-white rounded">
+                    <h2 class="card-header"> Book: <%= book[:book] %></h2>
                     <div>
-                        <div>Note: <%= e[:note] %></div>
-                        Content:
-                        <div>
-                            <%= sanitize e[:converted_content] %>
-                        </div>
+                        <% if book[:exported_notes].length > 0 %>
+                            <h3> Notes: <%= book[:exported_notes].length %> </h3>
+                            <% book[:exported_notes].each do |e| %>
+                                <div class="card-body">
+                                    <div class= "text-dark font-weight-bold">
+                                    Note: <%= e[:note] %></div>
+                                    Content:
+                                    <div>
+                                        <%= sanitize e[:converted_content] %>
+                                    </div>
+                                </div>
+                        <% end %>
+                        <% else %>
+                            <div class="card-body">
+                                <p>
+                                    This book has no notes yet.
+                                </p>
+                            </div>
+                        <% end %>
+                        <%= link_to 'Details', books_path(book), class:"btn btn-outline-dark" %>
                     </div>
-                <% end %>
-            <% else %>
-                <p>
-                    This book has no notes yet.
-                </p>
+                </div>
             <% end %>
+            <div class="row justify-content-center">
+                <%= link_to 'Book list', books_path, class:"btn btn-outline-dark" %>
+            </div>
         </div>
-    <% end %>
+    </div>
 </div>

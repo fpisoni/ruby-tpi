@@ -1,12 +1,11 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
   before_action :require_user, except: [ :new, :create ]
-  before_action :require_same_user, only: [ :edit, :destroy ]
+  before_action :require_same_user, only: [ :edit, :destroy, :show ]
 
   def index
     @users = User.all
   end
-
 
   def show
   end

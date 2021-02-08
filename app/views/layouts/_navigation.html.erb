@@ -1,18 +1,28 @@
-<nav class='navbar navbar-light bg-light'>
+<nav class='navbar navbar-light .bg-danger'>
     <%= link_to 'RUBY NOTES', root_path, class: 'navbar-brand', id:'logo' %>
-    <div>
+    <div class="navbar" id="navbarSupportedContent">
+        <ul class="nav .nav-pills mr-auto">
         <% if logged_in? %>
-            <%= link_to 'My books', books_path %>
-            <%= link_to 'My notes', notes_path %>
+            <li class="nav-item">
+                <div>
+                    <strong> <%= link_to 'BOOKS', books_path, class: "nav-link" %> </strong>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div>
+                    <strong> <%= link_to 'NOTES', notes_path, class: "nav-link" %> </strong>
+                </div>
+            </li>
         <% end %>
+        </ul>
     </div>
     <div>
         <% if logged_in? %>
-            <%= link_to "#{current_user.username}", user_path(current_user) %>
-            <%= link_to 'Logout', logout_path, method: 'delete' %>
+            <strong> <%= link_to "#{current_user.username}", user_path(current_user), class:"nav-link" %> </strong>
+            <%= link_to 'Logout', logout_path, method: 'delete', class: "nav-link .bg-light .border-light" %>
         <% else %>
-            <%= link_to 'Login', login_path %>
-            <%= link_to 'Sign Up', signup_path %>
+                <%= link_to 'Login', login_path, class: "nav-link"%>
+                <%= link_to 'Sign Up', signup_path, class: "nav-link"%>
         <% end %>
     </div>
 </nav>

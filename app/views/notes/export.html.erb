@@ -1,6 +1,18 @@
-<h1> Exported note: <%= link_to @note.name, note_path(@note) %> </h1>
-
-
-<div id="exported">
-    <%= sanitize @exported %>
+<h1 class="text-center mt-4"> Exported note: <%= link_to @note.name, note_path(@note) %> </h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8 mt-4">
+            <div class="card text-center shadow mb-5 bg-white rounded">
+                <div>
+                    Exported content:
+                </div>
+                <div id="exported">
+                    <%= sanitize @exported %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <%= link_to 'Notes list', notes_path, class: "btn btn-outline-light" %>
+    </div>
 </div>

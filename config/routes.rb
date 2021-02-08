@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   root 'pages#home'
-  get 'about', to: 'pages#about'
   get 'page_not_found', to: 'pages#not_found'
   get 'login', to: 'sessions#new'
   post 'login', to: 'sessions#create'
@@ -12,5 +11,4 @@ Rails.application.routes.draw do
   resources :notes
   resources :books
   resources :users, except: [ :new, :index ]
-  # get 'my_notes', 'notes#all_index'
 end

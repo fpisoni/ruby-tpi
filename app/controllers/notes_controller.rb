@@ -2,7 +2,7 @@ class NotesController < ApplicationController
   before_action :set_note, only: [ :show, :edit, :update, :destroy, :export ]
   before_action :require_user   #same user as note
   before_action :require_same_user, except: [ :index, :new, :create ]
-  before_action :set_user_books, only: [ :new, :create, :index, :edit ]
+  before_action :set_user_books, only: [ :new, :create, :index, :edit, :update ]
   before_action :set_index_notes, only: [ :index ]
 
   def index
@@ -13,15 +13,16 @@ class NotesController < ApplicationController
 
   def new
     @note = Note.new
+    @selected_book = @user_books.first
   end
 
   def edit
+    @selected_book = @note.book
   end
 
   def create
     @note = Note.new(note_params)
     @note.user = current_user
-    @note.book = Book.find(params[:note][:book])
 
     respond_to do |format|
       if @note.save
@@ -58,17 +59,13 @@ class NotesController < ApplicationController
     @exported = @note.export
   end
 
-  # def all_index
-  #   @books = current_user.
-  # end 
-
   private
     def set_note
       @note = Note.find(params[:id])
     end
 
     def note_params
-      params.require(:note).permit(:name, :content)
+      params.require(:note).permit(:name, :content).merge(book: Book.find(params[:note][:book]))
     end
 
     def set_user_books
@@ -80,7 +77,7 @@ class NotesController < ApplicationController
         @book = @user_books.find(params[:filter])
         @notes = @book.notes
       else
-        @notes = Note.all
+        @notes = current_user.notes
       end
     end
 
