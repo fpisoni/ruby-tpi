@@ -1,0 +1,12 @@
+<h1 class="text-center mt-4">Editing Book: <%= @book.name %></h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <%= render 'form', book: @book %>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <%= link_to 'Show', @book, class: "btn btn-outline-light" %> 
+    <%= link_to 'Back', books_path, class: "btn btn-outline-light" %>
+</div>

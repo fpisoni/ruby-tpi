@@ -1,0 +1,24 @@
+<p id="notice"><%= notice %></p>
+<h2 class="text-center mt-4"> Note: <%= @note.name %></h2>
+
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-8 mt-4">
+            <div class="card text-center shadow mb-5 bg-white rounded">
+                <div class="card-header .bg-light">
+                    <div>
+                        <strong> Book: </strong> <%= @note.book.name %>
+                    </div>
+                    <div>
+                        <h5> Content </h5>
+                        <%= @note.content %>
+                    </div>
+                    <%= link_to 'Edit', edit_note_path(@note), class: "btn btn-outline-dark" %> 
+                    <%= link_to 'Export', export_note_path(@note), class: "btn btn-outline-dark" %> 
+                    <%= link_to 'Notes list', notes_path, class: "btn btn-outline-dark" %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                

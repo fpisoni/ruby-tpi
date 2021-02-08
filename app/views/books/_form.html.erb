@@ -1,0 +1,24 @@
+
+<%= form_with(model: book, class: "shadow p-3 mb-3 bg-dark rounded") do |form| %>
+  <% if book.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(book.errors.count, "error") %> prohibited this book from being saved:</h2>
+
+      <ul>
+        <% book.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-group row">
+    <%= form.label :name, 'Book name', class: "col-2 col-form-label text-light" %>
+    <div class="col-10"> 
+      <%= form.text_field :name, class: "form-control shadow rounded" %>
+    </div>
+  </div>
+  <div class="form-group row justify-content-center">
+    <%= form.submit "Save", class: "btn btn-light btn-lg" %>
+  </div>
+<% end %>
+

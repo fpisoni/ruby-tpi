@@ -1,0 +1,42 @@
+<p id="notice"><%= notice %></p>
+
+<h2 class="text-center mt-4"> Book: <%= @book.name %></h2>
+
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-8 mt-4">
+            <div class="card text-center shadow mb-5 bg-white rounded">
+                <div class="card-header .bg-light">
+                    <% if @book.notes.length > 0 %>
+                        <h4>First <%= pluralize(@show_notes.length, 'note')%>:</h4> <!-- Update to pagination -->
+                    </div>
+                    <div class="card-body">
+                        <% @show_notes.each do |note| %>
+                            <div>
+                                <p><b>Title:</b> <%= note.name %></p>
+                                <div>
+                                    <b>Content:</b>
+                                    <p> <%= note.content.length >= 20 ? "#{note.content.first 20}..." : note.content  %> </p>
+                                </div>
+                                <div>
+                                    <%= link_to 'Show note', note_path(note), class: "btn btn-outline-grey" %> <strong>|</strong>
+                                    <%= link_to 'Export', export_note_path(note), class: "btn btn-outline-grey" %>
+                                </div>
+                                <hr class="my-4">
+                            </div>
+                        <% end %>
+                    
+                    <% else %>
+                        <div class="card-body">You have no notes yet on this book</div>
+                    <% end %>
+
+                    <%= link_to 'Edit', edit_book_path(@book), class: "btn btn-outline-dark" %> 
+                    <%= link_to 'Export', export_book_path(@book), class: "btn btn-outline-dark" %> 
+                    <%= link_to 'Book list', books_path, class: "btn btn-outline-dark" %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

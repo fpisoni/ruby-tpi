@@ -1,0 +1,15 @@
+<div class="container" id="home-container">
+  <div class="text-center text-dark">
+    <h1 class="display-4 text-danger">RN</h1>
+    <p class="lead">Welcome to Ruby Notes!</p>
+    <hr class="my-4">
+    <p>A simplified and rubified version of Tomboy</p>
+
+    <% if logged_in? %>
+        <%= link_to "Your profile", user_path(current_user), class: "btn btn-outline-grey" %>
+    <% else %>
+        <%= link_to "Login", login_path, class: "btn btn-outline-grey" %>
+        <%= link_to "Sign up", signup_path, class: "btn btn-outline-grey" %>
+    <% end %>
+  </div>
+</div>
