@@ -30,9 +30,9 @@ local (por defecto este ocupará el puerto 3000). La misma debera contar con:
 
 * Ruby (version 2.7.1).
 * Pandoc, la última versión disponible (2.5 al escribir este documento).
-⋅⋅* Una guía de instalación del mismo está [aquí](https://pandoc.org/installing.html))
+    * Una guía de instalación del mismo está [aquí](https://pandoc.org/installing.html))
 * Un gestor de paquetes de node de preferencia.
-⋅⋅* Es recomendado utilizar [Yarn](https://yarnpkg.com/getting-started/install)
+    * Es recomendado utilizar [Yarn](https://yarnpkg.com/getting-started/install)
 
 > El sistema preferentemente deberá estar basado en UNIX, para el correcto funcionamiento de Ruby.
 > Es posible la instalación en Windows, pero las instrucciones para ello escapan al alcance de este documento.
@@ -74,9 +74,9 @@ $ rails db:migrate
 Una vez realizados los pasos anteriores, es necesario levantar el servidor y hacerlo disponible para acceder vía el navegador.
 Esto es posible con el comando:
 
-> ```bash
-> $ rails server
->```
+ ```bash
+ $ rails server
+```
 
 Esto permitirá al usuario acceder al sistema vía la dirección web localhost:3000 o 127.0.0.1:3000.
 
@@ -84,6 +84,6 @@ Esto permitirá al usuario acceder al sistema vía la dirección web localhost:3
 También es posible acceder a una consola de administración del sistema (principalmente de la base de datos), 
 mediante el comando:
 
->```bash
-> $ rails console
->```
+```bash
+ $ rails console
+```
