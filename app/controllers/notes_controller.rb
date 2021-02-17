@@ -1,6 +1,6 @@
 class NotesController < ApplicationController
+  before_action :require_user  
   before_action :set_note, only: [ :show, :edit, :update, :destroy, :export ]
-  before_action :require_user   #same user as note
   before_action :require_same_user, except: [ :index, :new, :create ]
   before_action :set_user_books, only: [ :new, :create, :index, :edit, :update ]
   before_action :set_index_notes, only: [ :index ]

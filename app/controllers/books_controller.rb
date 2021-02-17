@@ -1,8 +1,8 @@
 class BooksController < ApplicationController
-  before_action :set_book, only: [:show, :edit, :update, :destroy, :export]
-  before_action :set_all_books, only: [ :index, :mass_export ]
   before_action :require_user
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :export]
   before_action :require_same_user, except: [ :index, :new, :create, :mass_export ]
+  before_action :set_all_books, only: [ :index, :mass_export ]
 
   def index
   end
@@ -19,16 +19,16 @@ class BooksController < ApplicationController
   end
 
   def create
-    book = Book.new(book_params)
-    book.user = current_user
+    @book = Book.new(book_params)
+    @book.user = current_user
 
     respond_to do |format|
-      if book.save
-        format.html { redirect_to book, notice: 'Book was successfully created.' }
-        format.json { render :show, status: :created, location: book }
+      if @book.save
+        format.html { redirect_to @book, notice: 'Book was successfully created.' }
+        format.json { render :show, status: :created, location: @book }
       else
         format.html { render :new }
-        format.json { render json: book.errors, status: :unprocessable_entity }
+        format.json { render json: @book.errors, status: :unprocessable_entity }
       end
     end
   end
